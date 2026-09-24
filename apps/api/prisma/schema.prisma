@@ -1,0 +1,139 @@
+// Métadonnées de la plateforme RHM Base.
+// Les tables/données CRÉÉES PAR LES UTILISATEURS ne vivent PAS ici :
+// elles vivent dans un schéma Postgres dédié par projet (voir services/schema.service.ts).
+// Ce fichier ne décrit que la plateforme elle-même (users, projects, api keys, logs...).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ApiKeyType {
+  PUBLIC
+  SECRET
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  passwordHash      String
+  name              String?
+  emailVerified     Boolean  @default(false)
+  verifyToken       String?
+  verifyTokenExp    DateTime?
+  resetToken        String?
+  resetTokenExp     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  memberships       ProjectMember[]
+  auditLogs         AuditLog[]
+}
+
+model Project {
+  id            String   @id @default(uuid())
+  slug          String   @unique // utilisé pour le nom du schéma Postgres: proj_<slug>
+  name          String
+  description   String?
+  dbSchema      String   @unique // nom réel du schéma Postgres provisionné
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  members       ProjectMember[]
+  apiKeys       ApiKey[]
+  auditLogs     AuditLog[]
+  webhooks      Webhook[]
+  storageBuckets StorageBucket[]
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  @@unique([userId, projectId])
+}
+
+model ApiKey {
+  id          String     @id @default(uuid())
+  type        ApiKeyType
+  name        String
+  prefix      String     // ex: rhm_pub_ / rhm_sec_ suivi de 8 caractères visibles
+  keyHash     String     // hash sha256 de la clé complète (jamais stockée en clair)
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime   @default(now())
+
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  method      String?
+  endpoint    String?
+  statusCode  Int?
+  ipAddress   String?
+  durationMs  Int?
+  action      String   // ex: "auth.login", "table.create", "data.insert"
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId      String?
+}
+
+model Webhook {
+  id           String   @id @default(uuid())
+  url          String
+  event        String   // ex: "users.INSERT"
+  secret       String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  deliveries   WebhookDelivery[]
+}
+
+model WebhookDelivery {
+  id           String   @id @default(uuid())
+  statusCode   Int?
+  success      Boolean  @default(false)
+  attempt      Int      @default(1)
+  payload      Json
+  createdAt    DateTime @default(now())
+
+  webhook      Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhookId    String
+}
+
+model StorageBucket {
+  id          String   @id @default(uuid())
+  name        String
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+
+  @@unique([projectId, name])
+}
