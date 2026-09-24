@@ -56,7 +56,7 @@ export default function ProjectsPage() {
         </div>
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[#0e1013] hover:brightness-110"
+          className="rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[var(--ink)] hover:brightness-110"
         >
           Nouveau projet
         </button>
@@ -82,7 +82,7 @@ export default function ProjectsPage() {
           <button
             type="submit"
             disabled={creating}
-            className="self-start rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[#0e1013] hover:brightness-110 disabled:opacity-60"
+            className="self-start rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[var(--ink)] hover:brightness-110 disabled:opacity-60"
           >
             {creating ? "Création…" : "Créer"}
           </button>
