@@ -1,0 +1,11 @@
+{
+  "name": "rhm-base",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:dashboard": "npm run dev --workspace=apps/dashboard",
+    "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/dashboard"
+  }
+}
