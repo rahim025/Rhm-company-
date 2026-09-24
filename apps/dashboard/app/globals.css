@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0e1013;
+  --ink-raised: #16191e;
+  --ink-line: #262b33;
+  --paper: #eeece6;
+  --paper-dim: #9aa0ab;
+  --signal: #e2a53a;
+}
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+::selection {
+  background: var(--signal);
+  color: #0e1013;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
