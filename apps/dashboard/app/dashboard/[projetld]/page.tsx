@@ -259,7 +259,7 @@ function TableStudio({ projectId }: { projectId: string }) {
             {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
             <button
               type="submit"
-              className="mt-4 rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[#0e1013] hover:brightness-110"
+              className="mt-4 rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[var(--ink)] hover:brightness-110"
             >
               Créer la table
             </button>
@@ -335,7 +335,7 @@ function SqlEditor({ projectId }: { projectId: string }) {
       <button
         onClick={run}
         disabled={running}
-        className="mt-3 rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[#0e1013] hover:brightness-110 disabled:opacity-60"
+        className="mt-3 rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[var(--ink)] hover:brightness-110 disabled:opacity-60"
       >
         {running ? "Exécution…" : "Exécuter"}
       </button>
@@ -428,7 +428,7 @@ function ApiKeys({ projectId }: { projectId: string }) {
             <option value="SECRET">Secrète (lecture/écriture)</option>
           </select>
         </div>
-        <button className="rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[#0e1013] hover:brightness-110">
+        <button className="rounded-md bg-[var(--signal)] px-4 py-2 text-sm font-medium text-[var(--ink)] hover:brightness-110">
           Générer
         </button>
       </form>
